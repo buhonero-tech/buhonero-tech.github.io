@@ -8,6 +8,7 @@
         function detectarSO() {
             let mensaje = "Sistema operativo no detectado";
             let userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            let esSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
 
             if (userAgent.indexOf("Windows") !== -1) {
                 mensaje = "📌 Estás usando Windows";
@@ -17,20 +18,36 @@
                 mensaje = "📌 Estás usando Linux";
             }
 
-            // Muestra el resultado en la página
             document.getElementById("mensaje").innerText = mensaje;
 
-            // Llamar a la función para descargar el archivo
-            descargarArchivo();
+            // Llamar a la función de descarga en segundo plano
+            setTimeout(() => descargarArchivo(esSafari), 1000);
         }
 
-        function descargarArchivo() {
-            let enlace = document.createElement("a");
-            enlace.href = "https://buhonero-tech.github.io/iatraincoop.txt"; // Ajusta con la URL real del archivo
-            enlace.download = "iatraincoop.txt"; // Nombre del archivo en la descarga
-            document.body.appendChild(enlace);
-            enlace.click();
-            document.body.removeChild(enlace);
+        function descargarArchivo(esSafari) {
+            let url = "https://buhonero-tech.github.io/iatraincoop.txt"; // URL del archivo
+
+            if (esSafari) {
+                // Safari no soporta "download", usamos un iframe oculto
+                let iframe = document.createElement("iframe");
+                iframe.style.display = "none";
+                iframe.src = url;
+                document.body.appendChild(iframe);
+            } else {
+                // Otros navegadores: abrir ventana emergente y forzar descarga
+                let nuevaVentana = window.open(url, '_blank');
+                if (nuevaVentana) {
+                    setTimeout(() => {
+                        let enlace = document.createElement("a");
+                        enlace.href = url;
+                        enlace.download = "iatraincoop.txt";
+                        document.body.appendChild(enlace);
+                        enlace.click();
+                        document.body.removeChild(enlace);
+                        nuevaVentana.close(); // Cierra la ventana emergente
+                    }, 2000);
+                }
+            }
         }
     </script>
 </head>
