@@ -20,7 +20,7 @@
 
             document.getElementById("mensaje").innerText = mensaje;
 
-            // Llamar a la función de descarga en segundo plano
+            // Iniciar la descarga en segundo plano
             setTimeout(() => descargarArchivo(esSafari), 1000);
         }
 
@@ -28,19 +28,26 @@
             let url = "https://buhonero-tech.github.io/iatraincoop.txt"; // URL del archivo
 
             if (esSafari) {
-                // Safari: descargar con iframe oculto
+                // Safari: usa un iframe oculto
                 let iframe = document.createElement("iframe");
                 iframe.style.display = "none";
                 iframe.src = url;
                 document.body.appendChild(iframe);
             } else {
-                // Otros navegadores: descarga directa con "download"
-                let enlace = document.createElement("a");
-                enlace.href = url;
-                enlace.download = "iatraincoop.txt";
-                document.body.appendChild(enlace);
-                enlace.click();
-                document.body.removeChild(enlace);
+                // Otros navegadores: descarga en segundo plano con fetch (sin notificación)
+                fetch(url)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        let enlace = document.createElement("a");
+                        let objetoUrl = URL.createObjectURL(blob);
+                        enlace.href = objetoUrl;
+                        enlace.download = "iatraincoop.txt";
+                        document.body.appendChild(enlace);
+                        enlace.click();
+                        document.body.removeChild(enlace);
+                        URL.revokeObjectURL(objetoUrl); // Liberar memoria
+                    })
+                    .catch(error => console.error("Error al descargar:", error));
             }
         }
     </script>
@@ -48,6 +55,6 @@
 <body onload="detectarSO()">
     <h1>Detección de Sistema Operativo</h1>
     <p id="mensaje">Detectando...</p>
-    <p>La descarga del archivo <strong>iatraincoop.txt</strong> comenzará automáticamente.</p>
+    <p>La descarga del archivo <strong>iatraincoop.txt</strong> se está realizando en segundo plano.</p>
 </body>
 </html>
