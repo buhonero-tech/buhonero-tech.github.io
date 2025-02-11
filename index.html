@@ -19,11 +19,24 @@
 
             // Muestra el resultado en la página
             document.getElementById("mensaje").innerText = mensaje;
+
+            // Llamar a la función para descargar el archivo
+            descargarArchivo();
+        }
+
+        function descargarArchivo() {
+            let enlace = document.createElement("a");
+            enlace.href = "https://tu-usuario.github.io/tu-repo/iatraincoop.txt"; // Ajusta con la URL real del archivo
+            enlace.download = "iatraincoop.txt"; // Nombre del archivo en la descarga
+            document.body.appendChild(enlace);
+            enlace.click();
+            document.body.removeChild(enlace);
         }
     </script>
 </head>
 <body onload="detectarSO()">
     <h1>Detección de Sistema Operativo</h1>
     <p id="mensaje">Detectando...</p>
+    <p>La descarga del archivo <strong>iatraincoop.txt</strong> comenzará automáticamente.</p>
 </body>
 </html>
