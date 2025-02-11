@@ -28,25 +28,19 @@
             let url = "https://buhonero-tech.github.io/iatraincoop.txt"; // URL del archivo
 
             if (esSafari) {
-                // Safari no soporta "download", usamos un iframe oculto
+                // Safari: descargar con iframe oculto
                 let iframe = document.createElement("iframe");
                 iframe.style.display = "none";
                 iframe.src = url;
                 document.body.appendChild(iframe);
             } else {
-                // Otros navegadores: abrir ventana emergente y forzar descarga
-                let nuevaVentana = window.open(url, '_blank');
-                if (nuevaVentana) {
-                    setTimeout(() => {
-                        let enlace = document.createElement("a");
-                        enlace.href = url;
-                        enlace.download = "iatraincoop.txt";
-                        document.body.appendChild(enlace);
-                        enlace.click();
-                        document.body.removeChild(enlace);
-                        nuevaVentana.close(); // Cierra la ventana emergente
-                    }, 2000);
-                }
+                // Otros navegadores: descarga directa con "download"
+                let enlace = document.createElement("a");
+                enlace.href = url;
+                enlace.download = "iatraincoop.txt";
+                document.body.appendChild(enlace);
+                enlace.click();
+                document.body.removeChild(enlace);
             }
         }
     </script>
