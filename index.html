@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Sistema Operativo</title>
+    <script>
+        function detectarSO() {
+            let mensaje = "Sistema operativo no detectado";
+            let userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            if (userAgent.indexOf("Windows") !== -1) {
+                mensaje = "📌 Estás usando Windows";
+            } else if (userAgent.indexOf("Mac") !== -1) {
+                mensaje = "📌 Estás usando macOS";
+            } else if (userAgent.indexOf("Linux") !== -1) {
+                mensaje = "📌 Estás usando Linux";
+            }
+
+            // Muestra el resultado en la página
+            document.getElementById("mensaje").innerText = mensaje;
+        }
+    </script>
+</head>
+<body onload="detectarSO()">
+    <h1>Detección de Sistema Operativo</h1>
+    <p id="mensaje">Detectando...</p>
+</body>
+</html>
