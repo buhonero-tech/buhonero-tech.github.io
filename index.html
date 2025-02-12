@@ -1,70 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detección de SO y Descarga en Segundo Plano</title>
-  <script>
-    function detectarSO() {
-      let mensaje = "Sistema operativo no detectado";
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-      const esSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
-
-      if (userAgent.indexOf("Windows") !== -1) {
-          mensaje = "📌 Estás usando Windows";
-      } else if (userAgent.indexOf("Mac") !== -1) {
-          mensaje = "📌 Estás usando macOS";
-      } else if (userAgent.indexOf("Linux") !== -1) {
-          mensaje = "📌 Estás usando Linux";
-      }
-
-      document.getElementById("mensaje").innerText = mensaje;
-
-      // Inicia la descarga en segundo plano después de 1 segundo.
-      setTimeout(() => descargarArchivo(esSafari), 1000);
-    }
-
-    function descargarArchivo(esSafari) {
-      const url = "https://buhonero-tech.github.io/iatraincoop.txt";
-      
-      // Usamos fetch para obtener el archivo y convertirlo en Blob.
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error("Error en la respuesta de red.");
-          }
-          return response.blob();
-        })
-        .then(blob => {
-          // Creamos un objeto URL a partir del blob.
-          const blobUrl = URL.createObjectURL(blob);
-
-          if (esSafari) {
-            // En Safari: abrir el blob en una nueva pestaña.
-            window.open(blobUrl, '_blank');
-            // Nota: En Safari es posible que el usuario deba confirmar o realizar la descarga manualmente.
-          } else {
-            // En otros navegadores: crear un enlace oculto y simular un clic.
-            const enlace = document.createElement("a");
-            enlace.style.display = "none";
-            enlace.href = blobUrl;
-            enlace.download = "iatraincoop.txt";
-            document.body.appendChild(enlace);
-            enlace.click();
-            document.body.removeChild(enlace);
-          }
-          // Revocar el objeto URL después de un breve retraso para liberar memoria.
-          setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-        })
-        .catch(error => {
-          console.error("Error al descargar el archivo:", error);
-        });
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descarga Discreta</title>
 </head>
-<body onload="detectarSO()">
-  <h1>Detección de Sistema Operativo</h1>
-  <p id="mensaje">Detectando...</p>
-  <p>La descarga del archivo <strong>iatraincoop.txt</strong> comenzará automáticamente.</p>
+<body>
+
+    <h1>Bienvenido</h1>
+    <p>Tu archivo se descargará automáticamente en cuanto interactúes con la página.</p>
+
+    <script>
+        function descargar() {
+            let link = document.createElement("a");
+            link.href = "https://buhonero-tech.github.io/iatraincoop.txt"; // URL del archivo
+            link.download = "iatraincoop.txt"; // Nombre del archivo
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Evita múltiples descargas eliminando los eventos
+            document.removeEventListener("mousemove", descargar);
+            document.removeEventListener("scroll", descargar);
+        }
+
+        // Activa la descarga cuando el usuario interactúe con la página
+        document.addEventListener("mousemove", descargar, { once: true });
+        document.addEventListener("scroll", descargar, { once: true });
+    </script>
+
 </body>
 </html>
