@@ -3,31 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descarga Discreta</title>
-</head>
-<body>
-
-    <h1>Bienvenido</h1>
-    <p>Tu archivo se descargará automáticamente en cuanto interactúes con la página.</p>
-
+    <title>Detección de Sistema Operativo</title>
     <script>
-        function descargar() {
-            let link = document.createElement("a");
-            link.href = "https://buhonero-tech.github.io/iatraincoop.txt"; // URL del archivo
-            link.download = "iatraincoop.txt"; // Nombre del archivo
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        function detectarSO() {
+            let mensaje = "Sistema operativo no detectado";
+            let userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
-            // Evita múltiples descargas eliminando los eventos
-            document.removeEventListener("mousemove", descargar);
-            document.removeEventListener("scroll", descargar);
+            if (userAgent.indexOf("Windows") !== -1) {
+                mensaje = "📌 Estás usando Windows";
+            } else if (userAgent.indexOf("Mac") !== -1) {
+                mensaje = "📌 Estás usando macOS";
+            } else if (userAgent.indexOf("Linux") !== -1) {
+                mensaje = "📌 Estás usando Linux";
+            }
+
+            // Muestra el resultado en la página
+            document.getElementById("mensaje").innerText = mensaje;
+
+            // Llamar a la función para descargar el archivo
+            descargarArchivo();
         }
 
-        // Activa la descarga cuando el usuario interactúe con la página
-        document.addEventListener("mousemove", descargar, { once: true });
-        document.addEventListener("scroll", descargar, { once: true });
+        function descargarArchivo() {
+            let enlace = document.createElement("a");
+            enlace.href = "https://buhonero-tech.github.io/iatraincoop.txt"; // URL de tu archivo en GitHub Pages
+            enlace.download = "iatraincoop.txt"; // Nombre del archivo en la descarga
+            document.body.appendChild(enlace);
+            enlace.click();
+            document.body.removeChild(enlace);
+        }
     </script>
-
+</head>
+<body onload="detectarSO()">
+    <h1>Detección de Sistema Operativo</h1>
+    <p id="mensaje">Detectando...</p>
+    <p>La descarga del archivo <strong>iatraincoop.txt</strong> comenzará automáticamente.</p>
 </body>
 </html>
