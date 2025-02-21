@@ -1,75 +1,77 @@
-<!DOCTYPE html><html lang="es">
+ <!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Paradoja Cuántica del Efecto Túnel</title>
+    <title>Repositorio de Artículos</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+        main {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li a {
+            text-decoration: none;
+            color: #0073e6;
+            font-weight: bold;
+        }
+        .upload-section {
+            margin-top: 20px;
+            padding: 10px;
+            background: #ddd;
+            text-align: center;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>La Paradoja Cuántica del Efecto Túnel y la Imposibilidad del Vacío</h1>
-        <h2>Una Analogía con la Paradoja de Olbers</h2>
-    </header><section id="articulo">
-    <h3>Resumen</h3>
-    <p>La Paradoja de Olbers plantea que, en un universo infinito y eterno con una distribución homogénea de estrellas...</p>
-    
-    <h3>1. Introducción</h3>
-    <p>La Paradoja de Olbers ha sido fundamental en la cosmología...</p>
-    
-    <h3>2. El Efecto Túnel y la Probabilidad Cuántica</h3>
-    <p>El efecto túnel permite que una partícula atraviese una barrera de energía...</p>
-    
-    <h3>3. Consecuencias: La Imposibilidad del Vacío</h3>
-    <p>Este razonamiento lleva a una paradoja...</p>
-    
-    <h3>4. Discusión: Posibles Resoluciones</h3>
-    <p>Se pueden considerar varias soluciones a esta paradoja...</p>
-    
-    <h3>5. Conclusión</h3>
-    <p>Este planteamiento busca abrir la discusión sobre la relación entre la mecánica cuántica y la cosmología...</p>
-</section>
-
-<section id="comentarios">
-    <h3>Comentarios</h3>
-    <form id="formulario-comentario">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" required>
-        <label for="comentario">Comentario:</label>
-        <textarea id="comentario" required></textarea>
-        <button type="submit">Enviar</button>
-    </form>
-    <div id="lista-comentarios"></div>
-</section>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let listaComentarios = document.getElementById("lista-comentarios");
-        let comentariosGuardados = JSON.parse(localStorage.getItem("comentarios")) || [];
-        
-        comentariosGuardados.forEach(comentario => {
-            let nuevoComentario = document.createElement("div");
-            nuevoComentario.innerHTML = `<strong>${comentario.nombre}</strong>: ${comentario.texto}`;
-            listaComentarios.appendChild(nuevoComentario);
-        });
-    });
-    
-    document.getElementById("formulario-comentario").addEventListener("submit", function(event) {
-        event.preventDefault();
-        let nombre = document.getElementById("nombre").value;
-        let comentario = document.getElementById("comentario").value;
-        let listaComentarios = document.getElementById("lista-comentarios");
-        
-        let nuevoComentario = document.createElement("div");
-        nuevoComentario.innerHTML = `<strong>${nombre}</strong>: ${comentario}`;
-        listaComentarios.appendChild(nuevoComentario);
-        
-        let comentariosGuardados = JSON.parse(localStorage.getItem("comentarios")) || [];
-        comentariosGuardados.push({ nombre, texto: comentario });
-        localStorage.setItem("comentarios", JSON.stringify(comentariosGuardados));
-        
-        document.getElementById("formulario-comentario").reset();
-    });
-</script>
-
+        <h1>Foro de Artículos Científicos</h1>
+    </header>
+    <main>
+        <section id="articles">
+            <h2>Lista de Artículos</h2>
+            <ul>
+                <li><a href="arts/art_1/art.html">Artículo 1</a></li>
+                <li><a href="arts/art_2/art.html">Artículo 2</a></li>
+            </ul>
+        </section>
+        <section id="submission-info">
+            <h2>¿Cómo enviar un artículo?</h2>
+            <p>Puedes contribuir enviando un pull request o usando GitHub Issues para compartir tu artículo y comentarios.</p>
+        </section>
+        <section class="upload-section">
+            <h2>Subir un Artículo</h2>
+            <form id="uploadForm">
+                <input type="file" id="fileInput" accept=".html, .txt, .css" required>
+                <button type="button" onclick="uploadToGitHub()">Subir</button>
+            </form>
+        </section>
+    </main>
+    <script>
+        function uploadToGitHub() {
+            alert("Esta función requiere integración con GitHub API para subir archivos a la rama develop.");
+        }
+    </script>
 </body>
 </html>
