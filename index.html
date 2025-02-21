@@ -1,59 +1,117 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repositorio de Artículos</title>
+    <title>Repositorio de Artículos - Avances Espaciales y Cultura Griega</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Times New Roman', Times, serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #e0e0e0;
+            color: #333;
         }
         header {
-            background: #333;
-            color: white;
+            background: linear-gradient(135deg, #f7f7f7, #a8a8a8);
+            color: #1a1a1a;
             text-align: center;
-            padding: 1rem 0;
+            padding: 2rem;
+            border-bottom: 2px solid #ccc;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #f1c40f; /* Dorado */
         }
         main {
             width: 80%;
-            margin: auto;
+            margin: 20px auto;
             padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            background-image: url('https://images.unsplash.com/photo-1506748686213-4a5b74d7d87e'); /* Fondo inspirado en el espacio */
+            background-size: cover;
+            color: #fff;
+        }
+        h2 {
+            font-size: 2rem;
+            color: #f1c40f;
+            border-bottom: 2px solid #f1c40f;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
         }
         ul {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
         li a {
             text-decoration: none;
-            color: #0073e6;
+            color: #fff;
+            font-size: 1.1rem;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px;
+            margin: 10px 0;
+            display: block;
+            border-radius: 5px;
             font-weight: bold;
         }
+        li a:hover {
+            background: rgba(0, 0, 0, 0.6);
+            transform: scale(1.05);
+            transition: transform 0.2s ease-in-out;
+        }
         .upload-section {
-            margin-top: 20px;
-            padding: 10px;
-            background: #ddd;
+            margin-top: 40px;
+            padding: 20px;
+            background: #f7f7f7;
             text-align: center;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+        }
+        .upload-section h2 {
+            color: #333;
+        }
+        .upload-section button {
+            background-color: #f1c40f;
+            color: white;
+            border: none;
+            padding: 12px 20px;
             border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .upload-section button:hover {
+            background-color: #e67e22;
+        }
+        footer {
+            background: #333;
+            color: #f7f7f7;
+            text-align: center;
+            padding: 15px;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
     <header>
         <h1>Foro de Artículos Científicos</h1>
+        <p>Explorando los avances en el área espacial y la influencia de la cultura griega</p>
     </header>
     <main>
         <section id="articles">
             <h2>Lista de Artículos</h2>
             <ul>
-                <li><a href="arts/art_1/art.html">Artículo 1</a></li>
-                <li><a href="arts/art_2/art.html">Artículo 2</a></li>
+                <li><a href="arts/art_1/art.html">Artículo 1: Viaje a Marte</a></li>
+                <li><a href="arts/art_2/art.html">Artículo 2: Tecnología y Futuro Espacial</a></li>
+                <li><a href="arts/art_3/art.html">Artículo 3: La Herencia Griega en la Ciencia Moderna</a></li>
             </ul>
         </section>
         <section id="submission-info">
@@ -68,9 +126,38 @@
             </form>
         </section>
     </main>
+    <footer>
+        <p>&copy; 2025 Foro de Artículos Científicos. Todos los derechos reservados.</p>
+    </footer>
     <script>
         function uploadToGitHub() {
-            alert("Esta función requiere integración con GitHub API para subir archivos a la rama develop.");
+            // Este es solo un ejemplo, necesitarás una autenticación real con GitHub API
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert("Por favor, selecciona un archivo para subir.");
+                return;
+            }
+
+            alert("Esta función requiere integración con GitHub API para subir archivos a la rama 'develop'.");
+
+            // Aquí podrías integrar la API de GitHub para hacer el upload a la rama 'develop'
+            /*
+            fetch('https://api.github.com/repos/username/repo/contents/path/to/file', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'token YOUR_GITHUB_TOKEN',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: 'Subir artículo',
+                    content: btoa(file) // codificar archivo en base64
+                })
+            }).then(response => response.json())
+              .then(data => alert("Archivo subido exitosamente a GitHub"))
+              .catch(error => alert("Error al subir el archivo: " + error));
+            */
         }
     </script>
 </body>
