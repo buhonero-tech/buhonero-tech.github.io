@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Árbol Genealógico — Familia Crespo Marbán</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* =====================================================================
+   VARIABLES & RESET
+===================================================================== */
+:root {
+  --bg:           #f2ece0;
+  --parchment:    #e8dfc8;
+  --parchment2:   #ddd3b8;
+  --ink:          #1e140a;
+  --ink2:         #3d2b1a;
+  --ink3:         #6b4c33;
+  --gold:         #8a6a2a;
+  --gold2:        #b8962e;
+  --gold3:        #d4b45a;
+  --rust:         #7a3120;
+  --rust2:        #a84232;
+  --line:         #9a7040;
+  --card-m:       #ede5d3;
+  --card-f:       #ede0d8;
+  --card-u:       #e5e0d5;
+  --border:       #c4a96a;
+  --border2:      #9a7a44;
+  --ph-color:     #b09060;
+  --ph-border:    #c4a060;
+  --shadow:       rgba(30,20,10,0.18);
+  --radius:       6px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(184,150,46,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 85% 90%, rgba(122,49,32,0.06) 0%, transparent 60%);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--ink);
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+/* =====================================================================
+   TOOLBAR
+===================================================================== */
+#toolbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: linear-gradient(to bottom, rgba(30,20,10,0.96), rgba(30,20,10,0.90));
+  border-bottom: 1px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+  backdrop-filter: blur(4px);
+}
+
+#toolbar .brand {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: var(--gold3);
+  white-space: nowrap;
+}
+
+#toolbar .tools {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold3);
+  padding: 6px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--gold); color: var(--ink); }
+.btn.active { background: var(--gold2); color: var(--ink); border-color: var(--gold2); }
+.btn.primary { background: var(--rust); border-color: var(--rust2); color: #f5ead5; }
+.btn.primary:hover { background: var(--rust2); }
+
+.edit-hint {
+  font-size: 0.72rem;
+  color: rgba(212,180,90,0.6);
+  font-style: italic;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* =====================================================================
+   MAIN WRAPPER
+===================================================================== */
+#page-wrap {
+  padding-top: 70px;
+}
+
+/* =====================================================================
+   HEADER
+===================================================================== */
+#tree-header {
+  text-align: center;
+  padding: 48px 20px 36px;
+  position: relative;
+}
+
+.ornament-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 10px auto;
+  max-width: 600px;
+}
+.ornament-line::before,
+.ornament-line::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold2), transparent);
+}
+
+.ornament-sym {
+  color: var(--gold2);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+h1.tree-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  font-weight: 600;
+  color: var(--ink2);
+  letter-spacing: 0.08em;
+  line-height: 1.15;
+  margin: 8px 0;
+}
+h1.tree-title em {
+  color: var(--rust);
+  font-style: italic;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1em;
+}
+
+.tree-subtitle {
+  font-size: 1rem;
+  color: var(--ink3);
+  font-style: italic;
+  letter-spacing: 0.05em;
+}
+
+/* Editable header fields */
+.editable-title {
+  outline: none;
+  border-bottom: 1px dashed transparent;
+  transition: border-color 0.2s;
+  cursor: text;
+  display: inline;
+}
+.edit-mode .editable-title:hover,
+.edit-mode .editable-title:focus {
+  border-bottom-color: var(--gold2);
+  background: rgba(184,150,46,0.07);
+  border-radius: 2px;
+}
+
+/* =====================================================================
+   APELLIDOS STRIP
+===================================================================== */
+#apellidos-strip {
+  max-width: 960px;
+  margin: 0 auto 52px;
+  padding: 0 20px;
+}
+
+.strip-inner {
+  background: var(--parchment);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 30px 20px;
+  position: relative;
+  box-shadow: 0 3px 16px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+
+.strip-inner::before {
+  content: '❧';
+  position: absolute;
+  top: -13px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--parchment);
+  padding: 0 10px;
+  color: var(--gold2);
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.strip-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.apellidos-flow {
+  line-height: 2.2;
+  font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+  color: var(--ink2);
+}
+
+.ap-nombre {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 1.1em;
+  color: var(--rust);
+}
+
+.ap-known {
+  color: var(--ink2);
+  font-style: italic;
+  position: relative;
+}
+
+.ap-ph {
+  display: inline-block;
+  min-width: 48px;
+  border-bottom: 1.5px solid var(--ph-border);
+  color: var(--ph-color);
+  font-style: italic;
+  font-size: 0.9em;
+  text-align: center;
+  padding: 0 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.edit-mode .ap-ph:hover { background: rgba(196,160,96,0.15); border-radius: 2px; }
+
+.ap-dot { color: var(--border); margin: 0 2px; font-size: 0.7em; vertical-align: middle; }
+
+.strip-footer {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--ink3);
+  font-style: italic;
+}
+
+/* =====================================================================
+   TREE CANVAS
+===================================================================== */
+#tree-canvas {
+  width: 100%;
+  overflow-x: auto;
+  padding: 0 16px;
+}
+
+#tree-inner {
+  min-width: 1100px;
+  position: relative;
+  padding: 0 0 40px;
+}
+
+/* Generation rows */
+.gen-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  position: relative;
+  padding: 0 10px;
+}
+
+.gen-row + .gen-row { margin-top: 0; }
+
+.gen-spacer { height: 56px; }
+
+/* =====================================================================
+   PERSON CARD
+===================================================================== */
+.person-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0 4px;
+}
+
+.person-card {
+  border-radius: var(--radius);
+  padding: 10px 11px 9px;
+  width: 100%;
+  max-width: 164px;
+  position: relative;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 10px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.45);
+  transition: box-shadow 0.2s, transform 0.2s;
+  cursor: default;
+}
+
+.person-card.gender-m { background: var(--card-m); }
+.person-card.gender-f { background: var(--card-f); }
+.person-card.gender-u { background: var(--card-u); }
+.person-card.proband  {
+  background: linear-gradient(145deg, #f8f0de, #ede3c8);
+  border: 2px solid var(--gold2);
+  max-width: 210px;
+  box-shadow: 0 4px 24px rgba(138,106,42,0.25), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+.edit-mode .person-card:hover {
+  box-shadow: 0 6px 28px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.5);
+  transform: translateY(-2px);
+  z-index: 10;
+}
+
+.card-gen-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 4px;
+  opacity: 0.7;
+}
+.proband .card-gen-badge { color: var(--rust); opacity: 1; letter-spacing: 0.25em; }
+
+/* Gender corner dot */
+.person-card::after {
+  content: '';
+  position: absolute;
+  top: 7px; right: 7px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+.gender-m::after { background: #7aa0c0; }
+.gender-f::after { background: #c09090; }
+.gender-u::after { background: #b0a080; }
+.proband::after  { background: var(--gold2); width: 8px; height: 8px; }
+
+/* Editable fields */
+[contenteditable] {
+  outline: none;
+  border-radius: 2px;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.edit-mode [contenteditable]:hover {
+  background: rgba(138,106,42,0.09);
+}
+.edit-mode [contenteditable]:focus {
+  background: rgba(138,106,42,0.14);
+  box-shadow: 0 0 0 1px var(--gold2);
+}
+
+.card-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.35;
+  min-height: 1.35em;
+}
+.proband .card-name { font-size: 0.88rem; color: var(--rust); }
+
+.card-surnames {
+  font-size: 0.68rem;
+  color: var(--ink2);
+  font-style: italic;
+  line-height: 1.5;
+  margin-top: 3px;
+  min-height: 1em;
+}
+.proband .card-surnames { font-size: 0.78rem; }
+
+.card-surname-ph {
+  color: var(--ph-color);
+  border-bottom: 1px solid var(--ph-border);
+  cursor: pointer;
+  font-style: italic;
+}
+
+.card-meta {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(154,112,64,0.25);
+  font-size: 0.62rem;
+  color: var(--ink3);
+  line-height: 1.6;
+  min-height: 1em;
+}
+.card-meta-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.48rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 1px;
+}
+
+.card-meta-ph {
+  color: var(--ph-color);
+  font-style: italic;
+}
+
+/* =====================================================================
+   SVG CONNECTOR LINES (ornamental)
+===================================================================== */
+#svg-lines {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* =====================================================================
+   EXTRA GENERATIONS SECTION (G5)
+===================================================================== */
+.gen-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-align: center;
+  margin: 48px 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.gen-section-title::before,
+.gen-section-title::after {
+  content: '';
+  flex: 1;
+  max-width: 200px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold));
+}
+.gen-section-title::after {
+  background: linear-gradient(to left, transparent, var(--gold));
+}
+
+/* couple grouping */
+.couple-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  padding: 0 8px;
+}
+.couple-pair {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.couple-label {
+  font-size: 0.6rem;
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.15em;
+  text-align: center;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.couple-dash {
+  display: flex;
+  align-items: center;
+  padding-top: 28px;
+  color: var(--gold2);
+  font-size: 1.2rem;
+}
+
+/* =====================================================================
+   LEGEND
+===================================================================== */
+#legend {
+  max-width: 720px;
+  margin: 48px auto 0;
+  padding: 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  justify-content: center;
+  font-size: 0.78rem;
+  color: var(--ink3);
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.legend-swatch {
+  width: 30px;
+  height: 18px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+.ls-m { background: var(--card-m); }
+.ls-f { background: var(--card-f); }
+.ls-p { background: linear-gradient(145deg,#f8f0de,#ede3c8); border: 2px solid var(--gold2); }
+.ls-ph {
+  background: transparent;
+  border: none;
+  border-bottom: 2px dashed var(--ph-border);
+  border-radius: 0;
+  width: 40px;
+}
+
+/* =====================================================================
+   FOOTER
+===================================================================== */
+#page-footer {
+  text-align: center;
+  margin-top: 56px;
+  font-size: 0.72rem;
+  color: var(--ink3);
+  font-style: italic;
+  letter-spacing: 0.08em;
+}
+
+/* =====================================================================
+   EXPORT OVERLAY
+===================================================================== */
+#export-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(30,20,10,0.75);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+#export-overlay.show { display: flex; }
+#export-box {
+  background: var(--parchment);
+  border: 1px solid var(--gold2);
+  border-radius: 8px;
+  padding: 32px 40px;
+  text-align: center;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+#export-box h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  color: var(--ink2);
+  margin-bottom: 10px;
+}
+#export-box p { font-size: 0.85rem; color: var(--ink3); font-style: italic; margin-bottom: 20px; }
+.export-options { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* =====================================================================
+   MODAL (edit person)
+===================================================================== */
+#modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(30,20,10,0.65);
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+}
+#modal-overlay.show { display: flex; }
+#modal-box {
+  background: var(--parchment);
+  border: 1px solid var(--gold2);
+  border-radius: 8px;
+  padding: 28px 32px;
+  max-width: 480px;
+  width: 95%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+#modal-box h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.2em;
+  color: var(--rust);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-field { margin-bottom: 16px; }
+.modal-field label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 5px;
+}
+.modal-field input,
+.modal-field textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  padding: 7px 10px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.modal-field input:focus,
+.modal-field textarea:focus {
+  border-color: var(--gold2);
+  box-shadow: 0 0 0 2px rgba(184,150,46,0.15);
+}
+.modal-field textarea { resize: vertical; min-height: 60px; }
+.modal-field .hint {
+  font-size: 0.68rem;
+  color: var(--ink3);
+  font-style: italic;
+  margin-top: 3px;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.gender-toggle {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gender-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--ink3);
+  transition: all 0.15s;
+}
+.gender-btn[data-g="m"].sel { background: #c0d4e4; border-color: #7aa0c0; color: var(--ink); }
+.gender-btn[data-g="f"].sel { background: #e4c8c8; border-color: #c09090; color: var(--ink); }
+.gender-btn[data-g="u"].sel { background: var(--parchment2); border-color: var(--border2); color: var(--ink); }
+
+/* =====================================================================
+   PRINT / EXPORT HIDE
+===================================================================== */
+.no-export { /* handled by JS */ }
+
+@media print {
+  #toolbar, #modal-overlay, #export-overlay { display: none !important; }
+  body { background: white; padding-top: 0; }
+  #page-wrap { padding-top: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     TOOLBAR
+═══════════════════════════════════════════ -->
+<div id="toolbar" class="no-export">
+  <span class="brand">Árbol Genealógico · Editor</span>
+  <div class="tools">
+    <span class="edit-hint" id="hint-text">Activa el modo edición para modificar los datos</span>
+    <button class="btn" id="btn-edit" onclick="toggleEdit()">✏ Editar</button>
+    <button class="btn" id="btn-add-person" onclick="openAddModal()" style="display:none">＋ Añadir persona</button>
+    <button class="btn primary" onclick="openExport()">⬇ Guardar imagen</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE
+═══════════════════════════════════════════ -->
+<div id="page-wrap">
+
+<!-- HEADER -->
+<div id="tree-header">
+  <div class="ornament-line"><span class="ornament-sym">✦</span></div>
+  <h1 class="tree-title">
+    Árbol Genealógico<br>
+    <em><span class="editable-title" contenteditable="false" id="main-title">Familia Crespo Marbán</span></em>
+  </h1>
+  <div class="tree-subtitle">
+    <span class="editable-title" contenteditable="false" id="sub-title">Cuatro generaciones · Estefanía y sus ancestros</span>
+  </div>
+  <div class="ornament-line" style="margin-top:10px;"><span class="ornament-sym">❧</span></div>
+</div>
+
+<!-- APELLIDOS STRIP -->
+<div id="apellidos-strip">
+  <div class="strip-inner">
+    <div class="strip-label">Nombre completo en orden hereditario</div>
+    <div class="apellidos-flow" id="apellidos-flow">
+      <!-- Built by JS -->
+    </div>
+    <div class="strip-footer" id="strip-footer">
+      Los huecos <strong>___</strong> indican apellidos aún por descubrir.
+      Haz clic en las tarjetas (en modo edición) para completar la información.
+    </div>
+  </div>
+</div>
+
+<!-- MAIN TREE -->
+<div id="tree-canvas">
+  <div id="tree-inner">
+    <svg id="svg-lines" xmlns="http://www.w3.org/2000/svg"></svg>
+
+    <!-- GEN 4: BISABUELOS -->
+    <div class="gen-row" id="gen4"></div>
+    <div class="gen-spacer"></div>
+
+    <!-- GEN 3: ABUELOS -->
+    <div class="gen-row" id="gen3"></div>
+    <div class="gen-spacer"></div>
+
+    <!-- GEN 2: PADRES -->
+    <div class="gen-row" id="gen2"></div>
+    <div class="gen-spacer"></div>
+
+    <!-- GEN 0: ESTEFANÍA -->
+    <div class="gen-row" id="gen0" style="justify-content:center;"></div>
+  </div>
+</div>
+
+<!-- GEN 5: TATARABUELOS -->
+<div id="gen5-section" style="max-width:1200px; margin:0 auto; padding:0 20px;">
+  <div class="gen-section-title">Quinta generación · Tatarabuelos conocidos</div>
+  <div style="display:flex; justify-content:space-around; flex-wrap:wrap; gap:20px;" id="gen5-row"></div>
+</div>
+
+<!-- LEGEND -->
+<div id="legend">
+  <div class="legend-item"><div class="legend-swatch ls-m"></div> Varón</div>
+  <div class="legen
