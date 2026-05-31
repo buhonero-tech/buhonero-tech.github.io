@@ -4,13 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Árbol Genealógico Pro</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
-
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-
 <style>
-
 :root{
   --bg:#f4ecd8;
   --card:#fffaf0;
@@ -19,15 +15,12 @@
   --line:#6b4e2e;
   --accent:#8b6b3f;
 }
-
-/* ===== BASE ===== */
 body{
   margin:0;
   background:linear-gradient(135deg,#e8dcc2,#f7f0e1);
   font-family:'Cormorant Garamond',serif;
   color:var(--text);
 }
-
 .toolbar{
   display:flex;
   justify-content:center;
@@ -35,7 +28,6 @@ body{
   padding:15px;
   flex-wrap:wrap;
 }
-
 button, select{
   background:#6b4e2e;
   color:white;
@@ -45,11 +37,9 @@ button, select{
   cursor:pointer;
   font-family:'Cinzel',serif;
 }
-
 button:hover{
   background:#8a6340;
 }
-
 #tree{
   width:1700px;
   margin:auto;
@@ -60,8 +50,6 @@ button:hover{
   position:relative;
   overflow:hidden;
 }
-
-/* ===== SVG ROOT ===== */
 svg#branches{
   position:absolute;
   top:0;
@@ -70,8 +58,6 @@ svg#branches{
   height:100%;
   pointer-events:none;
 }
-
-/* ===== LEVELS ===== */
 .level{
   display:flex;
   justify-content:center;
@@ -79,7 +65,6 @@ svg#branches{
   margin:70px 0;
   position:relative;
 }
-
 .person{
   width:180px;
   min-height:120px;
@@ -91,7 +76,6 @@ svg#branches{
   position:relative;
   box-shadow:0 6px 14px rgba(0,0,0,0.1);
 }
-
 .person::before{
   content:"❦";
   position:absolute;
@@ -102,8 +86,6 @@ svg#branches{
   padding:0 5px;
   color:var(--border);
 }
-
-/* avatar */
 .avatar{
   width:60px;
   height:60px;
@@ -112,55 +94,75 @@ svg#branches{
   background:#ddd;
   overflow:hidden;
   border:2px solid var(--border);
+  position:relative;
 }
-
 .avatar img{
   width:100%;
   height:100%;
   object-fit:cover;
 }
-
-/* editable */
+.avatar input[type="file"]{
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  opacity:0;
+  cursor:pointer;
+  z-index:1;
+}
 .editable{
   outline:none;
 }
-
 .editable:empty::before{
   content:attr(data-placeholder);
   color:#999;
 }
-
-/* buttons per card */
 .card-actions{
   display:flex;
   justify-content:center;
   gap:5px;
   margin-top:6px;
 }
-
 .small-btn{
   font-size:10px;
   padding:4px 6px;
   border-radius:6px;
 }
-
-/* styles */
+.remove-photo{
+  position:absolute;
+  top:2px;
+  right:2px;
+  width:18px;
+  height:18px;
+  padding:0;
+  font-size:12px;
+  border-radius:50%;
+  background:#c44;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  border:none;
+  z-index:3;
+  line-height:1;
+}
+.remove-photo:hover{
+  background:#a33;
+}
 .theme-medieval .person{
   background:#fff4db;
   border-color:#7b5a2e;
 }
-
 .theme-nordic .person{
   background:#e9f2f7;
   border-color:#4c6b7a;
 }
-
 .theme-indian .person{
   background:#fff1e6;
   border-color:#b65a2a;
 }
-
-/* leaves */
 .leaf{
   position:absolute;
   width:10px;
@@ -169,17 +171,13 @@ svg#branches{
   border-radius:50%;
   opacity:0.3;
 }
-
 </style>
 </head>
-
 <body>
-
 <div class="toolbar">
   <button onclick="addGeneration()">➕ Generación</button>
   <button onclick="removeGeneration()">➖ Generación</button>
   <button onclick="exportPNG()">📸 Exportar PNG</button>
-
   <select onchange="setTheme(this.value)">
     <option value="default">Estilo clásico</option>
     <option value="theme-medieval">Medieval / Nobiliario</option>
@@ -187,54 +185,45 @@ svg#branches{
     <option value="theme-indian">Indio ornamental</option>
   </select>
 </div>
-
 <div id="tree">
-
 <svg id="branches"></svg>
-
 <div id="levels">
-
-  <!-- nivel base -->
   <div class="level">
     <div class="person user">
       <div class="avatar">
         <input type="file" onchange="setImage(this)" />
+        <button class="small-btn remove-photo" onclick="removePhoto(this)" title="Quitar foto">✕</button>
       </div>
       <div class="editable" contenteditable data-placeholder="Tú"></div>
       <div class="editable" contenteditable data-placeholder="Profesión"></div>
-
       <div class="card-actions">
         <button class="small-btn" onclick="addPerson(this)">+</button>
         <button class="small-btn" onclick="removePerson(this)">-</button>
       </div>
     </div>
   </div>
-
 </div>
-
 </div>
-
 <script>
-
 /* ===================== GENERACIONES ===================== */
-
 function addGeneration(){
   const levels = document.getElementById("levels");
-
+  const currentLevel = levels.querySelector(".level");
+  
+  if(!currentLevel) return;
+  
+  const personCount = currentLevel.querySelectorAll(".person").length;
+  
   const level = document.createElement("div");
   level.className="level";
 
-  // por defecto 2 personas
-  for(let i=0;i<2;i++){
+  for(let i=0; i < personCount * 2; i++){
     level.appendChild(createPerson());
   }
-
   levels.insertBefore(level, levels.firstChild);
-
   drawBranches();
   addLeaves();
 }
-
 function removeGeneration(){
   const levels = document.querySelectorAll(".level");
   if(levels.length>1){
@@ -242,122 +231,97 @@ function removeGeneration(){
   }
   drawBranches();
 }
-
 /* ===================== PERSONAS ===================== */
-
 function createPerson(){
   const div = document.createElement("div");
   div.className="person";
-
   div.innerHTML=`
     <div class="avatar">
       <input type="file" onchange="setImage(this)">
+      <button class="small-btn remove-photo" onclick="removePhoto(this)" title="Quitar foto">✕</button>
     </div>
     <div class="editable" contenteditable data-placeholder="Nombre"></div>
     <div class="editable" contenteditable data-placeholder="Profesión"></div>
-
     <div class="card-actions">
       <button class="small-btn" onclick="addPerson(this)">+</button>
       <button class="small-btn" onclick="removePerson(this)">-</button>
     </div>
   `;
-
   return div;
 }
-
 function addPerson(btn){
   const level = btn.closest(".level");
   level.appendChild(createPerson());
   drawBranches();
 }
-
 function removePerson(btn){
   const person = btn.closest(".person");
   const level = btn.closest(".level");
-
   if(level.children.length>1){
     person.remove();
   }
-
   drawBranches();
 }
-
 /* ===================== IMAGEN ===================== */
-
 function setImage(input){
   const file = input.files[0];
+  if(!file) return;
   const img = document.createElement("img");
-
   img.src = URL.createObjectURL(file);
-
   const avatar = input.parentElement;
+  const removeBtn = avatar.querySelector(".remove-photo");
   avatar.innerHTML="";
+  if(removeBtn) avatar.appendChild(removeBtn);
   avatar.appendChild(img);
 }
-
+function removePhoto(btn){
+  const avatar = btn.parentElement;
+  const img = avatar.querySelector("img");
+  if(img){
+    img.remove();
+  }
+  const input = document.createElement("input");
+  input.type = "file";
+  input.onchange = function(){ setImage(this); };
+  avatar.appendChild(input);
+}
 /* ===================== SVG BRANCHES ===================== */
-
 function drawBranches(){
   const svg = document.getElementById("branches");
   svg.innerHTML="";
-
   const tree = document.getElementById("tree");
   const levels = document.querySelectorAll(".level");
-
   const rectTree = tree.getBoundingClientRect();
-
   levels.forEach((level,i)=>{
     const persons = level.querySelectorAll(".person");
-
     persons.forEach((p,j)=>{
-
       const from = p.getBoundingClientRect();
-
       const nextLevel = levels[i+1];
       if(!nextLevel) return;
-
       const targets = nextLevel.querySelectorAll(".person");
-
       targets.forEach(t=>{
         const to = t.getBoundingClientRect();
-
         const path = document.createElementNS("http://www.w3.org/2000/svg","path");
-
         const x1 = from.left+from.width/2-rectTree.left;
         const y1 = from.bottom-rectTree.top;
-
         const x2 = to.left+to.width/2-rectTree.left;
         const y2 = to.top-rectTree.top;
-
         const cx1 = x1;
         const cy1 = (y1+y2)/2;
-
         const cx2 = x2;
         const cy2 = (y1+y2)/2;
-
-        path.setAttribute("d",
-          `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`
-        );
-
+        path.setAttribute("d",`M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`);
         path.setAttribute("stroke","rgba(90,60,30,0.4)");
         path.setAttribute("fill","none");
-
         svg.appendChild(path);
-
       });
-
     });
-
   });
 }
-
 /* ===================== LEAVES ===================== */
-
 function addLeaves(){
   document.querySelectorAll(".leaf").forEach(l=>l.remove());
-
   const tree = document.getElementById("tree");
-
   for(let i=0;i<25;i++){
     const leaf = document.createElement("div");
     leaf.className="leaf";
@@ -366,40 +330,38 @@ function addLeaves(){
     tree.appendChild(leaf);
   }
 }
-
 /* ===================== THEMES ===================== */
-
 function setTheme(theme){
   document.getElementById("tree").className = theme;
 }
-
 /* ===================== EXPORT ===================== */
-
 async function exportPNG(){
-
-  const btn = document.querySelector("button");
-  btn.style.display="none";
+  const toolbar = document.querySelector(".toolbar");
+  const cardActions = document.querySelectorAll(".card-actions");
+  const removePhotoBtns = document.querySelectorAll(".remove-photo");
+  
+  toolbar.style.display = "none";
+  cardActions.forEach(el => el.style.display = "none");
+  removePhotoBtns.forEach(el => el.style.display = "none");
 
   const canvas = await html2canvas(document.getElementById("tree"),{
     scale:2,
     backgroundColor:null
   });
 
-  btn.style.display="block";
+  toolbar.style.display = "flex";
+  cardActions.forEach(el => el.style.display = "flex");
+  removePhotoBtns.forEach(el => el.style.display = "flex");
 
   const a = document.createElement("a");
   a.download="arbol.png";
   a.href=canvas.toDataURL("image/png");
   a.click();
 }
-
 /* init */
 addLeaves();
 drawBranches();
-
 window.addEventListener("resize",drawBranches);
-
 </script>
-
 </body>
 </html>
