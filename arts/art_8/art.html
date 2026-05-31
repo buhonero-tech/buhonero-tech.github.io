@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Árbol Genealógico</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
@@ -13,288 +12,272 @@
 <style>
 
 :root{
-    --bg:#f4ecd8;
-    --card:#fffaf0;
-    --border:#8b6f47;
-    --text:#2f2419;
-    --line:#7a5d36;
+  --bg:#f6ecd7;
+  --card:#fffaf0;
+  --border:#7a5a35;
+  --text:#2d241a;
+  --line:#6b4e2e;
 }
 
 body{
-    margin:0;
-    padding:30px;
-    background:linear-gradient(135deg,#e8dcc2,#f7f0e1);
-    font-family:'Cormorant Garamond',serif;
-    color:var(--text);
+  margin:0;
+  background:linear-gradient(135deg,#e9dcc2,#f8f1e3);
+  font-family:'Cormorant Garamond',serif;
+  color:var(--text);
+  padding:20px;
 }
 
 .toolbar{
-    text-align:center;
-    margin-bottom:25px;
+  text-align:center;
+  margin-bottom:20px;
 }
 
 button{
-    background:#6f4e2f;
-    color:white;
-    border:none;
-    padding:12px 24px;
-    border-radius:8px;
-    font-size:16px;
-    cursor:pointer;
-    font-family:'Cinzel',serif;
+  background:#6b4e2e;
+  color:white;
+  border:none;
+  padding:12px 22px;
+  font-family:'Cinzel',serif;
+  border-radius:8px;
+  cursor:pointer;
 }
 
 button:hover{
-    background:#8a6340;
+  background:#8a6340;
 }
 
+/* ARBOL */
 #tree{
-    width:1800px;
-    margin:auto;
-    background:
-        radial-gradient(circle at center, rgba(255,255,255,0.3), transparent 70%),
-        var(--bg);
+  width:1600px;
+  margin:auto;
+  background:radial-gradient(circle at center,#fff,transparent 70%),var(--bg);
+  border:6px solid var(--border);
+  border-radius:18px;
+  padding:40px 20px;
+  box-shadow:0 0 40px rgba(0,0,0,0.15);
+  position:relative;
+  overflow:hidden;
+}
 
-    border:6px solid var(--border);
-    border-radius:20px;
-    padding:50px;
-    box-shadow:0 0 40px rgba(0,0,0,0.15);
+/* tronco decorativo */
+#tree::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:120px;
+  width:6px;
+  height:85%;
+  background:linear-gradient(var(--line),transparent);
+  transform:translateX(-50%);
+  opacity:0.4;
 }
 
 .title{
-    text-align:center;
-    font-family:'Cinzel',serif;
-    font-size:42px;
-    margin-bottom:50px;
-    letter-spacing:2px;
+  text-align:center;
+  font-family:'Cinzel',serif;
+  font-size:40px;
+  margin-bottom:30px;
+  letter-spacing:2px;
 }
 
-.generations{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:30px;
+/* GRID TREE */
+.level{
+  display:grid;
+  gap:20px;
+  margin-bottom:40px;
 }
 
-.generation{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    gap:25px;
-}
+.level-4{ grid-template-columns:repeat(8,1fr); }
+.level-3{ grid-template-columns:repeat(4,1fr); }
+.level-2{ grid-template-columns:repeat(2,1fr); }
+.level-1{ grid-template-columns:1fr; justify-items:center; }
 
+/* CARD */
 .person{
-    width:240px;
-    min-height:120px;
-    background:var(--card);
-    border:2px solid var(--border);
-    border-radius:14px;
-    padding:15px;
-    position:relative;
-    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  background:var(--card);
+  border:2px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+  position:relative;
+  box-shadow:0 6px 15px rgba(0,0,0,0.08);
+  min-height:90px;
 }
 
+/* ornamento */
 .person::before{
-    content:"❦";
-    position:absolute;
-    top:-14px;
-    left:50%;
-    transform:translateX(-50%);
-    background:var(--bg);
-    padding:0 8px;
-    color:var(--border);
+  content:"❦";
+  position:absolute;
+  top:-12px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--bg);
+  padding:0 6px;
+  color:var(--border);
 }
 
-.name{
-    font-family:'Cinzel',serif;
-    font-weight:600;
-    font-size:18px;
-    text-align:center;
-    margin-bottom:8px;
-}
-
-.info{
-    font-size:16px;
-    text-align:center;
-}
-
+/* editable */
 .editable{
-    outline:none;
-    min-height:20px;
+  outline:none;
 }
 
 .editable:empty::before{
-    content:attr(data-placeholder);
-    color:#999;
+  content:attr(data-placeholder);
+  color:#999;
 }
 
+/* TEXTOS */
+.name{
+  font-family:'Cinzel',serif;
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+.info{
+  font-size:15px;
+}
+
+/* CONEXIONES (decorativas) */
 .connector{
-    width:120px;
-    height:2px;
-    background:var(--line);
-    position:relative;
-}
-
-.connector::before,
-.connector::after{
-    content:"";
-    position:absolute;
-    width:12px;
-    height:12px;
-    border:2px solid var(--line);
-    border-radius:50%;
-    top:-7px;
+  height:30px;
+  position:relative;
 }
 
 .connector::before{
-    left:-6px;
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  width:2px;
+  height:30px;
+  background:var(--line);
+  opacity:0.5;
 }
 
-.connector::after{
-    right:-6px;
+/* ramas horizontales */
+.branch{
+  position:relative;
 }
 
-.column-wrapper{
-    display:flex;
-    align-items:center;
+.branch::after{
+  content:"";
+  position:absolute;
+  top:-20px;
+  left:0;
+  right:0;
+  height:2px;
+  background:var(--line);
+  opacity:0.4;
 }
 
-.vertical-stack{
-    display:flex;
-    flex-direction:column;
-    gap:15px;
+/* highlight usuario */
+.user{
+  border:3px solid var(--border);
+  background:#fff3dc;
+  transform:scale(1.05);
 }
 
 .legend{
-    margin-top:40px;
-    text-align:center;
-    font-style:italic;
-    font-size:20px;
+  text-align:center;
+  margin-top:10px;
+  font-style:italic;
 }
 
 </style>
 </head>
+
 <body>
 
 <div class="toolbar">
-    <button onclick="guardarPNG()">Guardar como PNG</button>
+  <button onclick="exportar()">Guardar como PNG</button>
 </div>
 
 <div id="tree">
 
-    <div class="title">
-        Árbol Genealógico Familiar
+  <div class="title">Árbol Genealógico Familiar</div>
+
+  <!-- BISABUELOS (8) -->
+  <div class="level level-4 branch">
+
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Bisabuelo 1"></div><div class="info editable" contenteditable data-placeholder="Profesión"></div></div>
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Bisabuela 1"></div></div>
+
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Bisabuelo 2"></div></div>
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Bisabuela 2"></div></div>
+
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Bisabuelo 3"></div></div>
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Bisabuela 3"></div></div>
+
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Bisabuelo 4"></div></div>
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Bisabuela 4"></div></div>
+
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- ABUELOS (4) -->
+  <div class="level level-3 branch">
+
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Abuelo paterno"></div></div>
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Abuela paterna"></div></div>
+
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Abuelo materno"></div></div>
+    <div class="person"><div class="name editable" contenteditable data-placeholder="Abuela materna"></div></div>
+
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- PADRES (2) -->
+  <div class="level level-2 branch">
+
+    <div class="person">
+      <div class="name editable" contenteditable data-placeholder="Padre"></div>
+      <div class="info editable" contenteditable data-placeholder="Profesión"></div>
     </div>
 
-    <div class="generations">
-
-        <!-- GENERACIÓN 4 -->
-        <div class="generation">
-            <div class="person">
-                <div class="name editable" contenteditable data-placeholder="Bisabuelo paterno"></div>
-                <div class="info editable" contenteditable data-placeholder="Profesión"></div>
-                <div class="info editable" contenteditable data-placeholder="Nacido en"></div>
-            </div>
-
-            <div class="person">
-                <div class="name editable" contenteditable data-placeholder="Bisabuela paterna"></div>
-                <div class="info editable" contenteditable data-placeholder="Profesión"></div>
-                <div class="info editable" contenteditable data-placeholder="Nacida en"></div>
-            </div>
-
-            <div class="person">
-                <div class="name editable" contenteditable data-placeholder="Bisabuelo materno"></div>
-                <div class="info editable" contenteditable data-placeholder="Profesión"></div>
-                <div class="info editable" contenteditable data-placeholder="Nacido en"></div>
-            </div>
-
-            <div class="person">
-                <div class="name editable" contenteditable data-placeholder="Bisabuela materna"></div>
-                <div class="info editable" contenteditable data-placeholder="Profesión"></div>
-                <div class="info editable" contenteditable data-placeholder="Nacida en"></div>
-            </div>
-        </div>
-
-        <div class="generation">
-            <div class="connector"></div>
-            <div class="connector"></div>
-            <div class="connector"></div>
-            <div class="connector"></div>
-        </div>
-
-        <!-- GENERACIÓN 3 -->
-        <div class="generation">
-            <div class="person">
-                <div class="name editable" contenteditable data-placeholder="Abuelo paterno"></div>
-                <div class="info editable" contenteditable data-placeholder="Profesión"></div>
-                <div class="info editable" contenteditable data-placeholder="Nacido en"></div>
-            </div>
-
-            <div class="person">
-                <div class="name editable" contenteditable data-placeholder="Abuela paterna"></div>
-                <div class="info editable" contenteditable data-placeholder="Profesión"></div>
-                <div class="info editable" contenteditable data-placeholder="Nacida en"></div>
-            </div>
-        </div>
-
-        <div class="generation">
-            <div class="connector"></div>
-            <div class="connector"></div>
-        </div>
-
-        <!-- GENERACIÓN 2 -->
-        <div class="generation">
-            <div class="person">
-                <div class="name editable" contenteditable data-placeholder="Padre / Madre"></div>
-                <div class="info editable" contenteditable data-placeholder="Profesión"></div>
-                <div class="info editable" contenteditable data-placeholder="Nacido/a en"></div>
-            </div>
-        </div>
-
-        <div class="generation">
-            <div class="connector"></div>
-        </div>
-
-        <!-- GENERACIÓN 1 -->
-        <div class="generation">
-            <div class="person" style="background:#fff7e6;border-width:4px;">
-                <div class="name editable" contenteditable data-placeholder="Tú"></div>
-                <div class="info editable" contenteditable data-placeholder="Profesión"></div>
-                <div class="info editable" contenteditable data-placeholder="Lugar de nacimiento"></div>
-            </div>
-        </div>
-
+    <div class="person">
+      <div class="name editable" contenteditable data-placeholder="Madre"></div>
+      <div class="info editable" contenteditable data-placeholder="Profesión"></div>
     </div>
 
-    <div class="legend">
-        «La memoria de nuestros antepasados vive en nosotros»
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- TÚ -->
+  <div class="level level-1">
+
+    <div class="person user">
+      <div class="name editable" contenteditable data-placeholder="Tú"></div>
+      <div class="info editable" contenteditable data-placeholder="Profesión"></div>
+      <div class="info editable" contenteditable data-placeholder="Lugar de nacimiento"></div>
     </div>
+
+  </div>
+
+  <div class="legend">“La historia de la familia crece desde sus raíces”</div>
 
 </div>
 
 <script>
+async function exportar(){
 
-async function guardarPNG(){
+  const btn = document.querySelector("button");
+  btn.style.display="none";
 
-    const boton = document.querySelector("button");
-    boton.style.display="none";
+  const canvas = await html2canvas(document.getElementById("tree"),{
+    scale:2,
+    backgroundColor:null
+  });
 
-    const canvas = await html2canvas(
-        document.getElementById("tree"),
-        {
-            scale:2,
-            backgroundColor:null
-        }
-    );
+  btn.style.display="block";
 
-    boton.style.display="inline-block";
-
-    const enlace=document.createElement("a");
-    enlace.download="arbol-genealogico.png";
-    enlace.href=canvas.toDataURL("image/png");
-    enlace.click();
+  const link = document.createElement("a");
+  link.download = "arbol_genealogico.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
 }
-
 </script>
 
 </body>
